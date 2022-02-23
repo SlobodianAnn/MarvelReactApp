@@ -32,7 +32,10 @@ class CharList extends Component {
     const errorMessage = error ? <ErrorMessage /> : null;
     const spinner = loading ? <Spinner /> : null;
     const content = !(loading || error) ? (
-      <CharItem characters={characters} />
+      <CharItem
+        onCharSelected={this.props.onCharSelected}
+        characters={characters}
+      />
     ) : null;
     return (
       <div className="char__list">
@@ -49,8 +52,8 @@ class CharList extends Component {
   }
 }
 
-const CharItem = ({ characters }) => {
-  return characters.map((item, i) => {
+const CharItem = ({ characters, onCharSelected }) => {
+  return characters.map((item) => {
     let imgStyle = { objectFit: 'cover' };
 
     if (
@@ -60,7 +63,11 @@ const CharItem = ({ characters }) => {
       imgStyle = { objectFit: 'unset' };
     }
     return (
-      <li key={i + item.name} className="char__item">
+      <li
+        key={item.id}
+        onClick={() => onCharSelected(item.id)}
+        className="char__item"
+      >
         <img style={imgStyle} src={item.thumbnail} alt="abyss" />
         <div className="char__name">{item.name}</div>
       </li>
