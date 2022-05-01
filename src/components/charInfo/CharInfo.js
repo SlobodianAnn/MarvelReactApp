@@ -1,6 +1,7 @@
 import { Component } from 'react/cjs/react.production.min';
+import propTypes from 'prop-types';
+
 import './charInfo.scss';
-import thor from '../../resources/img/thor.jpeg';
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
@@ -24,6 +25,7 @@ class CharInfo extends Component {
       this.updateChar();
     }
   }
+
   updateChar = () => {
     const { charId } = this.props;
     if (!charId) {
@@ -111,6 +113,10 @@ const View = ({ char }) => {
       </ul>
     </>
   );
+};
+
+CharInfo.propTypes = {
+  charId: propTypes.number,
 };
 
 export default CharInfo;
