@@ -1,12 +1,15 @@
 import './charList.scss';
 
-import { Component } from 'react/cjs/react.production.min';
+import React, { Component } from 'react/cjs/react.production.min';
 import propTypes from 'prop-types';
 import MarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+import { render } from '@testing-library/react';
 
 class CharList extends Component {
+  myRef = React.createRef();
+
   state = {
     characters: [],
     loading: true,
@@ -64,8 +67,10 @@ class CharList extends Component {
       <CharItem
         onCharSelected={this.props.onCharSelected}
         characters={characters}
+        ref={this.myRef}
       />
     ) : null;
+
     return (
       <div className="char__list">
         <ul className="char__grid">
@@ -86,28 +91,54 @@ class CharList extends Component {
   }
 }
 
-const CharItem = ({ characters, onCharSelected }) => {
-  return characters.map((item) => {
-    let imgStyle = { objectFit: 'cover' };
+class CharItem extends Component {
+  myRef = [];
 
-    if (
-      item.thumbnail ===
-      'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    ) {
-      imgStyle = { objectFit: 'unset' };
-    }
-    return (
-      <li
-        key={item.id}
-        onClick={() => onCharSelected(item.id)}
-        className="char__item"
-      >
-        <img style={imgStyle} src={item.thumbnail} alt="abyss" />
-        <div className="char__name">{item.name}</div>
-      </li>
-    );
-  });
-};
+  activeChar = (e) => {
+    const clickedItem = e.currentTarget;
+
+    this.myRef.forEach((item) => {
+      item.classList.remove('char__item_selected');
+      if (clickedItem == item) {
+        item.classList.add('char__item_selected');
+      }
+    });
+  };
+
+  setItemsRef = (item) => {
+    this.myRef.push(item);
+  };
+
+  render() {
+    const { characters, onCharSelected } = this.props;
+
+    return characters.map((item) => {
+      let imgStyle = { objectFit: 'cover' };
+
+      if (
+        item.thumbnail ===
+        'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
+      ) {
+        imgStyle = { objectFit: 'unset' };
+      }
+
+      return (
+        <li
+          key={item.id}
+          onClick={(e) => {
+            onCharSelected(item.id);
+            this.activeChar(e);
+          }}
+          className={'char__item'}
+          ref={this.setItemsRef}
+        >
+          <img style={imgStyle} src={item.thumbnail} alt="abyss" />
+          <div className="char__name">{item.name}</div>
+        </li>
+      );
+    });
+  }
+}
 
 CharList.propTypes = {
   onCharSelected: propTypes.func,
