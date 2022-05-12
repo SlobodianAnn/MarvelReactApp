@@ -3,17 +3,15 @@ import './charList.scss';
 import React from 'react/cjs/react.production.min';
 import { useState, useEffect, useRef } from 'react';
 import propTypes from 'prop-types';
-import MarvelService from '../../services/MarvelService';
+import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const CharList = (props) => {
-  const MarvelServices = new MarvelService();
+  const { loading, error, getAllCharacters } = useMarvelService();
   const myRef = useRef();
 
   const [characters, setCharacters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
   const [newItemLoading, setItemLoading] = useState(false);
   const [offset, setOffset] = useState(210);
   const [charEnded, setCharEnded] = useState(false);
@@ -25,49 +23,41 @@ const CharList = (props) => {
       ended = true;
     }
     setCharacters((characters) => [...characters, ...newCharacters]);
-    setLoading(false);
     setItemLoading(false);
     setOffset((offset) => offset + 9);
     setCharEnded(ended);
   };
 
   useEffect(() => {
-    onRequest();
+    onRequest(offset, true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onRequest = (offset) => {
-    onCharListLoading();
-    MarvelServices.getAllCharacters(offset)
-      .then(onCharactersloaded)
-      .catch(onError);
-  };
-
-  const onCharListLoading = () => {
-    setItemLoading(true);
-  };
-
-  const onError = () => {
-    setLoading(false);
-    setError(true);
+  const onRequest = (offset, initial) => {
+    initial ? setItemLoading(false) : setItemLoading(true);
+    getAllCharacters(offset).then(onCharactersloaded);
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
-  const spinner = loading ? <Spinner /> : null;
-  const content = !(loading || error) ? (
-    <CharItem
-      onCharSelected={props.onCharSelected}
-      characters={characters}
-      ref={myRef}
-    />
-  ) : null;
+  const spinner = loading && !newItemLoading ? <Spinner /> : null;
+  // const content = !(loading || error) ? (
+  //   <CharItem
+  //     onCharSelected={props.onCharSelected}
+  //     characters={characters}
+  //     ref={myRef}
+  //   />
+  // ) : null;
 
   return (
     <div className="char__list">
       <ul className="char__grid">
         {errorMessage}
         {spinner}
-        {content}
+        <CharItem
+          onCharSelected={props.onCharSelected}
+          characters={characters}
+          ref={myRef}
+        />
       </ul>
       <button
         className="button button__main button__long"
