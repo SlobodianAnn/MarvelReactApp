@@ -6,6 +6,8 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import Skeleton from '../skeleton/Skeleton';
 
+import SearchComponent from '../SearchComponent/SearchComponent';
+
 const CharInfo = (props) => {
   const [char, setChar] = useState(null);
 
@@ -41,6 +43,7 @@ const CharInfo = (props) => {
       {errorMessage}
       {spinner}
       {content}
+      <SearchComponent />
     </div>
   );
 };
@@ -48,10 +51,7 @@ const CharInfo = (props) => {
 const View = ({ char }) => {
   const { name, description, thumbnail, homepage, wiki, comics } = char;
   let imgStyle = { objectFit: 'cover' };
-  if (
-    thumbnail ===
-    'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-  ) {
+  if (thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
     imgStyle = { objectFit: 'contain' };
   }
 
