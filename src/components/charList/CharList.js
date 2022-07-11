@@ -8,7 +8,7 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 
 const CharList = (props) => {
-  const { loading, error, getAllCharacters } = useMarvelService();
+  const { loading, error, getAllCharacters, process, setProcess } = useMarvelService();
   const myRef = useRef();
 
   const [characters, setCharacters] = useState([]);
@@ -35,7 +35,9 @@ const CharList = (props) => {
 
   const onRequest = (offset, initial) => {
     initial ? setItemLoading(false) : setItemLoading(true);
-    getAllCharacters(offset).then(onCharactersloaded);
+    getAllCharacters(offset)
+      .then(onCharactersloaded)
+      .then(() => setProcess('confirmed'));
   };
 
   const errorMessage = error ? <ErrorMessage /> : null;
@@ -46,11 +48,7 @@ const CharList = (props) => {
       <ul className="char__grid">
         {errorMessage}
         {spinner}
-        <CharItem
-          onCharSelected={props.onCharSelected}
-          characters={characters}
-          ref={myRef}
-        />
+        <CharItem onCharSelected={props.onCharSelected} characters={characters} ref={myRef} />
       </ul>
       <button
         className="button button__main button__long"
@@ -83,10 +81,7 @@ const CharItem = (props) => {
   return characters.map((item, i) => {
     let imgStyle = { objectFit: 'cover' };
 
-    if (
-      item.thumbnail ===
-      'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg'
-    ) {
+    if (item.thumbnail === 'http://i.annihil.us/u/prod/marvel/i/mg/b/40/image_not_available.jpg') {
       imgStyle = { objectFit: 'unset' };
     }
 
